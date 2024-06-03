@@ -1,0 +1,89 @@
+def rtde_depowdering():
+  global _hidden_verificationVariable=0
+  step_count_3f89b84f_1daa_4dd7_9152_f27885b7ee6c = 0.0
+  thread Step_Counter_Thread_4e983c46_69de_4b84_868f_8b9fe78277fd():
+    while (True):
+      step_count_3f89b84f_1daa_4dd7_9152_f27885b7ee6c = step_count_3f89b84f_1daa_4dd7_9152_f27885b7ee6c + 1.0
+      sync()
+    end
+  end
+  run Step_Counter_Thread_4e983c46_69de_4b84_868f_8b9fe78277fd()
+  set_target_payload(4.990000, [-0.060000, 0.002000, 0.014000], [0.022430, 0.022430, 0.022430, 0.000000, 0.000000, 0.000000])
+  set_standard_analog_input_domain(0, 1)
+  set_standard_analog_input_domain(1, 1)
+  set_tool_analog_input_domain(0, 1)
+  set_tool_analog_input_domain(1, 1)
+  set_analog_outputdomain(0, 0)
+  set_analog_outputdomain(1, 0)
+  set_input_actions_to_default()
+  set_tool_communication(False, 115200, 0, 1, 1.5, 3.5)
+  set_tool_output_mode(0)
+  set_tool_digital_output_mode(0, 1)
+  set_tool_digital_output_mode(1, 1)
+  set_tool_voltage(0)
+  set_tcp(p[0.0,0.0,0.0,0.0,0.0,0.0])
+  set_safety_mode_transition_hardness(0)
+  set_gravity([0.0, 0.0, 9.82])
+  # begin: URCap Installation Node
+  #   Source: rs485, 1.0.0, FZI Research Center for Information Technology
+  #   Type: RS485
+  global rs485=rpc_factory("xmlrpc", "http://127.0.0.1:40404/RPC2")
+  # end: URCap Installation Node
+  $ 1 "BeforeStart"
+  $ 2 "setp≔get_actual_joint_positions()"
+  global setp= get_actual_joint_positions ()
+  $ 3 "write_output_integer_register(0,1)"
+  write_output_integer_register(0,1)
+  $ 4 "Wait: 0.01"
+  sleep(0.01)
+  $ 5 "Popup: Initialized"
+  popup("Initialized", "Message", False, False, blocking=True)
+  $ 16 "Thread_1"
+  thread Thread_1():
+    while (True):
+      $ 17 "Loop"
+      while (True):
+        $ 18 "tmp≔p[0,0,0,0,0,0]"
+        global tmp=p[0,0,0,0,0,0]
+        $ 19 "tmp[0] = read_input_float_register(0)"
+        tmp[0] = read_input_float_register(0)
+        $ 20 "tmp[1] = read_input_float_register(1)"
+        tmp[1] = read_input_float_register(1)
+        $ 21 "tmp[2] = read_input_float_register(2)"
+        tmp[2] = read_input_float_register(2)
+        $ 22 "tmp[3] = read_input_float_register(3)"
+        tmp[3] = read_input_float_register(3)
+        $ 23 "tmp[4] = read_input_float_register(4)"
+        tmp[4] = read_input_float_register(4)
+        $ 24 "tmp[5] = read_input_float_register(5)"
+        tmp[5] = read_input_float_register(5)
+        $ 25 "setp≔get_inverse_kin(p[tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5]],get_actual_joint_positions())"
+        global setp= get_inverse_kin (p[tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5]], get_actual_joint_positions ())
+        $ 26 "sync()"
+        sync()
+      end
+    end
+  end
+  threadId_Thread_1 = run Thread_1()
+  while (True):
+    $ 6 "Robot Program"
+    $ 7 "write_output_integer_register(0, 1)"
+    write_output_integer_register(0, 1)
+    $ 8 "sync()"
+    sync()
+    $ 9 "MoveL"
+    $ 10 "setp" "breakAfter"
+    movel(setp, a=1.2, v=0.25)
+    $ 11 "write_output_integer_register(0, 0)"
+    write_output_integer_register(0, 0)
+    $ 12 "Loop read_input_integer_register(0)≟1"
+    while (read_input_integer_register(0) == 1):
+      $ 13 "sync()"
+      sync()
+    end
+    $ 14 "write_output_integer_register(0,1)"
+    write_output_integer_register(0,1)
+    $ 15 "sync()"
+    sync()
+  end
+end

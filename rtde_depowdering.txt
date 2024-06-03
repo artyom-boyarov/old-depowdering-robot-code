@@ -1,0 +1,27 @@
+ Program
+   BeforeStart
+     setp≔get_actual_joint_positions()
+     write_output_integer_register(0,1)
+     Wait: 0.01
+     Popup: Initialized
+   Robot Program
+     write_output_integer_register(0, 1)
+     sync()
+     MoveL
+       setp
+     write_output_integer_register(0, 0)
+     Loop read_input_integer_register(0)≟1
+       sync()
+     write_output_integer_register(0,1)
+     sync()
+   Thread_1
+     Loop
+       tmp≔p[0,0,0,0,0,0]
+       tmp[0] = read_input_float_register(0)
+       tmp[1] = read_input_float_register(1)
+       tmp[2] = read_input_float_register(2)
+       tmp[3] = read_input_float_register(3)
+       tmp[4] = read_input_float_register(4)
+       tmp[5] = read_input_float_register(5)
+       setp≔get_inverse_kin(p[tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5]],get_actual_joint_positions())
+       sync()

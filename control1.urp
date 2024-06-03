@@ -1,0 +1,31 @@
+#-------------------
+Program
+    BeforeStart
+        joints = get_actual_joint_positions()
+        write_output_boolean_register(0,True)
+        wait: 0.01
+        popup("Register initializaed.",title="Hi Junjiang")
+    Robot Program
+        #---LOOP read_input_integer_register(0)<2
+        if read_input_integer_register(0)==0:
+            write_output_boolean_register(0,True)
+            sync()
+            MoveJ(joints)
+            write_output_boolean_register(0,False)
+            while read_input_integer_register(0)==1:
+                sync()
+            write_output_boolean_register(0,True)
+            sync()
+        sync()
+    Thread_1
+    tmp = p[0,0,0,0,0,0]
+    while True:
+        tmp[0] = read_input_float_register(0)
+        tmp[1] = read_input_float_register(1)
+        tmp[2] = read_input_float_register(2)
+        tmp[3] = read_input_float_register(3)
+        tmp[4] = read_input_float_register(4)
+        tmp[5] = read_input_float_register(5)
+        joints = get_inverse_kin(p[tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5]],get_actual_joint_positions())
+        sync()
+
